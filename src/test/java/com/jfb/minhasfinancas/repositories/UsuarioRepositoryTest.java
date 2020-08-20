@@ -9,8 +9,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.jfb.minhasfinancas.model.entity.Usuario;
 
+import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
+
 @SpringBootTest
 @RunWith(SpringRunner.class)
+@AutoConfigureEmbeddedDatabase
 public class UsuarioRepositoryTest {
 
 	@Autowired
