@@ -2,6 +2,7 @@ package com.jfb.minhasfinancas.services.impl;
 
 import org.springframework.stereotype.Service;
 
+import com.jfb.minhasfinancas.exceptions.RegraNegocioException;
 import com.jfb.minhasfinancas.model.entity.Usuario;
 import com.jfb.minhasfinancas.repositories.UsuarioRepository;
 import com.jfb.minhasfinancas.services.UsuarioService;
@@ -30,7 +31,11 @@ public class UsuarioServiceImpl implements UsuarioService {
 
 	@Override
 	public void validarEmail(String email) {
-		
+		boolean existe = repository.existsByEmail(email);
+		if (existe) {
+			throw new RegraNegocioException(
+					"Já existe um usuario cadastrado com esse email.");
+		}
 	}
 
 }
