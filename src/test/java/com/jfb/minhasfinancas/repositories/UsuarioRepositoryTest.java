@@ -18,18 +18,35 @@ public class UsuarioRepositoryTest {
 	@Autowired
 	UsuarioRepository repository;
 	
-	@Test
-	public void deveVerificarAExistenciaDeEmail() {
-		// Cenário
+	private void instanciaUsuario() {
 		Usuario usuario = Usuario.builder()
 				.nome("usuario")
 				.email("usuario@email.com").build();
 		repository.save(usuario);
+	}
+	
+	@Test
+	public void deveVerificarAExistenciaDeEmail() {
+		// Cenário
+		instanciaUsuario();
 		
 		// Ação/execução
 		boolean resultado = repository.existsByEmail("usuario@email.com");
 		
 		// Verificação
 		Assertions.assertThat(resultado).isTrue();
+	}
+
+	
+	@Test
+	public void deveRetornaFalsoQuandoNaoHouverUsuarioCadastradoComOEmail() {
+		// Cenário
+		repository.deleteAll();
+		
+		// Ação/execução
+		boolean resultado = repository.existsByEmail("usuario@email.com");
+		
+		// Verificação
+		Assertions.assertThat(resultado).isFalse();
 	}
 }
