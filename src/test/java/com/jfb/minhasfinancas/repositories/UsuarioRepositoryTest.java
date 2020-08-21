@@ -30,7 +30,7 @@ public class UsuarioRepositoryTest {
 	@Test
 	public void deveVerificarAExistenciaDeEmail() {
 		// Cenário
-		Usuario obj = instanciaUsuario();
+		Usuario obj = criaUsuario();
 		entityManager.persist(obj);
 
 		// Ação/execução
@@ -54,7 +54,7 @@ public class UsuarioRepositoryTest {
 	@Test
 	public void devePersistirUmUsuarioNaBaseDeDados() {
 		// Cenário
-		Usuario obj = instanciaUsuario();
+		Usuario obj = criaUsuario();
 
 		// Ação/execução
 		Usuario objSalvo = repository.save(obj);
@@ -66,7 +66,7 @@ public class UsuarioRepositoryTest {
 	@Test
 	public void deveBuscarUmUusarioPorEmail() {
 		// Cenário
-		Usuario obj = instanciaUsuario();
+		Usuario obj = criaUsuario();
 		entityManager.persist(obj);
 		
 		// Ação/execução
@@ -83,7 +83,7 @@ public class UsuarioRepositoryTest {
 		Assertions.assertThat(resultado.isPresent()).isFalse();
 	}
 
-	private Usuario instanciaUsuario() {
+	private Usuario criaUsuario() {
 		Usuario obj = Usuario.builder()
 			.nome("usuario")
 			.email("usuario@email.com")
