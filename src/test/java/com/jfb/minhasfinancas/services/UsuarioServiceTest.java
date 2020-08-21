@@ -1,29 +1,49 @@
 package com.jfb.minhasfinancas.services;
 
+import java.util.Optional;
+
 import com.jfb.minhasfinancas.exceptions.RegraNegocioException;
+import com.jfb.minhasfinancas.model.entity.Usuario;
 import com.jfb.minhasfinancas.repositories.UsuarioRepository;
 import com.jfb.minhasfinancas.services.impl.UsuarioServiceImpl;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-@SpringBootTest
 @RunWith(SpringRunner.class)
 @ActiveProfiles("test")
 public class UsuarioServiceTest {
 
 	UsuarioService service;
+
+	@MockBean
 	UsuarioRepository repository;
 
 	@Before 
 	public void setUp() {
-		repository = Mockito.mock(UsuarioRepository.class);
 		service = new UsuarioServiceImpl(repository);
+	}
+
+	@Test(expected = Test.None.class)
+	public void deveAutenticarUmUsuarioComSucesso() {
+		// Cenário
+		String email = "usuario@email.com";
+		String senha = "senha";
+
+		Usuario obj = Usuario.builder().email(email).senha(senha).id(1l).build();
+		Mockito.when(repository.findByEmail(email)).thenReturn(Optional.of(obj));
+
+		// Ação/execução
+		Usuario resultado = service.autenticar(email, senha);
+
+		// Verificação
+		Assertions.assertThat(resultado).isNotNull();
 	}
 	
 	@Test(expected = Test.None.class)
