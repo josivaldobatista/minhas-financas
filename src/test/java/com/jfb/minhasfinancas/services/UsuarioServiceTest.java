@@ -2,7 +2,6 @@ package com.jfb.minhasfinancas.services;
 
 import java.util.Optional;
 
-import com.jayway.jsonpath.Option;
 import com.jfb.minhasfinancas.exceptions.ErroAutenticacao;
 import com.jfb.minhasfinancas.exceptions.RegraNegocioException;
 import com.jfb.minhasfinancas.model.entity.Usuario;
@@ -48,16 +47,20 @@ public class UsuarioServiceTest {
 		Assertions.assertThat(resultado).isNotNull();
 	}
 
-	@Test(expected = ErroAutenticacao.class)
+	@Test
 	public void develancarErroQuandoNaoEncontrarUsuarioCadastradoComEmailInformado() {
 		// Cenário
 		Mockito.when(repository.findByEmail(Mockito.anyString())).thenReturn(Optional.empty());
 
 		// Ação/execução
-		service.autenticar("usuario@email.com", "senha");
+		Throwable exception = Assertions.catchThrowable(
+			() -> service.autenticar("usuario@email.com", "senha"));
+
+		Assertions.assertThat(exception).isInstanceOf(
+			ErroAutenticacao.class).hasMessage("Usuário não encontrado para o email informado!");
 	}
 
-	@Test(expected = ErroAutenticacao.class)
+	@Test
 	public void deveLancarErroQuandoASenhaNaoBater() {
 		//Cenário
 		String senha = "senha";
@@ -65,8 +68,11 @@ public class UsuarioServiceTest {
 		Mockito.when(repository.findByEmail(Mockito.anyString())).thenReturn(Optional.of(obj));
 
 		// Ação/execução
-		service.autenticar("usuario@email.com", "123");
+		Throwable exception = Assertions.catchThrowable(
+			() -> service.autenticar("usuario@email.com", "123"));
 
+		Assertions.assertThat(exception).isInstanceOf(
+			ErroAutenticacao.class).hasMessage("Senha inválida!");
 	}
 	
 	@Test(expected = Test.None.class)
