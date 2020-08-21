@@ -2,6 +2,8 @@ package com.jfb.minhasfinancas.services;
 
 import java.util.Optional;
 
+import com.jayway.jsonpath.Option;
+import com.jfb.minhasfinancas.exceptions.ErroAutenticacao;
 import com.jfb.minhasfinancas.exceptions.RegraNegocioException;
 import com.jfb.minhasfinancas.model.entity.Usuario;
 import com.jfb.minhasfinancas.repositories.UsuarioRepository;
@@ -44,6 +46,27 @@ public class UsuarioServiceTest {
 
 		// Verificação
 		Assertions.assertThat(resultado).isNotNull();
+	}
+
+	@Test(expected = ErroAutenticacao.class)
+	public void develancarErroQuandoNaoEncontrarUsuarioCadastradoComEmailInformado() {
+		// Cenário
+		Mockito.when(repository.findByEmail(Mockito.anyString())).thenReturn(Optional.empty());
+
+		// Ação/execução
+		service.autenticar("usuario@email.com", "senha");
+	}
+
+	@Test(expected = ErroAutenticacao.class)
+	public void deveLancarErroQuandoASenhaNaoBater() {
+		//Cenário
+		String senha = "senha";
+		Usuario obj = Usuario.builder().email("usuario@email.com").senha(senha).build();
+		Mockito.when(repository.findByEmail(Mockito.anyString())).thenReturn(Optional.of(obj));
+
+		// Ação/execução
+		service.autenticar("usuario@email.com", "123");
+
 	}
 	
 	@Test(expected = Test.None.class)
