@@ -1,8 +1,11 @@
 package com.jfb.minhasfinancas.services.impl;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.jfb.minhasfinancas.exceptions.ErroAutenticacao;
 import com.jfb.minhasfinancas.exceptions.RegraNegocioException;
 import com.jfb.minhasfinancas.model.entity.Usuario;
 import com.jfb.minhasfinancas.repositories.UsuarioRepository;
@@ -20,23 +23,28 @@ public class UsuarioServiceImpl implements UsuarioService {
 
 	@Override
 	public Usuario autenticar(String email, String senha) {
-		// TODO Auto-generated method stub
-		return null;
+		Optional<Usuario> obj = repository.findByEmail(email);
+		if (!obj.isPresent()) {
+			throw new ErroAutenticacao("Usuário não encontrado para o email informado!");
+		}
+		if (!obj.get().getSenha().equals(senha)) {
+			throw new ErroAutenticacao("Senha inválida!");
+		}
+		return obj.get();
 	}
 
 	@Override
 	@Transactional
-	public Usuario salvarUsuario(Usuario usuario) {
-		validarEmail(usuario.getEmail());
-		return repository.save(usuario);
+	public Usuario salvarUsuario(Usuario obj) {
+		validarEmail(obj.getEmail());
+		return repository.save(obj);
 	}
 
 	@Override
 	public void validarEmail(String email) {
 		boolean existe = repository.existsByEmail(email);
 		if (existe) {
-			throw new RegraNegocioException(
-					"Já existe um usuario cadastrado com esse email.");
+			throw new RegraNegocioException("Já existe um usuario cadastrado com esse email.");
 		}
 	}
 
