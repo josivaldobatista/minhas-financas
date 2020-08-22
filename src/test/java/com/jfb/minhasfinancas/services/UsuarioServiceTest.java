@@ -8,7 +8,6 @@ import com.jfb.minhasfinancas.model.entity.Usuario;
 import com.jfb.minhasfinancas.repositories.UsuarioRepository;
 import com.jfb.minhasfinancas.services.impl.UsuarioServiceImpl;
 
-import org.apache.catalina.Server;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,6 +47,21 @@ public class UsuarioServiceTest {
 		Assertions.assertThat(usuarioSalvo.getNome()).isEqualTo("nome");
 		Assertions.assertThat(usuarioSalvo.getEmail()).isEqualTo("usuario@email.com");
 		Assertions.assertThat(usuarioSalvo.getSenha()).isEqualTo("senha");
+	}
+
+	@Test(expected = RegraNegocioException.class)
+	public void naoDeveCadastrarUmUsuarioComEmailJaCadastrado() {
+		// Cenário
+		String email = "usuario@email.com";
+		Usuario obj = Usuario.builder().email(email).build();
+		Mockito.doThrow(RegraNegocioException.class).when(service)
+			.validarEmail(email);
+
+		// Ação/execução
+		service.salvarUsuario(obj);
+
+		// Verificação
+		Mockito.verify(repository, Mockito.never()).save(obj);
 	}
 
 	@Test(expected = Test.None.class)
