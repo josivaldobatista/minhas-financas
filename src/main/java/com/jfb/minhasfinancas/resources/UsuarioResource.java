@@ -6,7 +6,6 @@ import com.jfb.minhasfinancas.model.dto.UsuarioDTO;
 import com.jfb.minhasfinancas.model.entity.Usuario;
 import com.jfb.minhasfinancas.services.UsuarioService;
 
-import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +28,7 @@ public class UsuarioResource {
             return ResponseEntity.ok(usuarioAutenticado);
         } catch (ErroAutenticacao e) {
             return ResponseEntity.badRequest().body(e.getMessage());
-        } 
+        }
     }
 
     @PostMapping
