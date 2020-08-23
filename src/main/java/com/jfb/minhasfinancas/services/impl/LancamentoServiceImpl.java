@@ -1,8 +1,10 @@
 package com.jfb.minhasfinancas.services.impl;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
+import com.jfb.minhasfinancas.exceptions.RegraNegocioException;
 import com.jfb.minhasfinancas.model.entity.Lancamento;
 import com.jfb.minhasfinancas.model.enums.StatusLancamento;
 import com.jfb.minhasfinancas.repositories.LancamentoRepository;
@@ -24,12 +26,15 @@ public class LancamentoServiceImpl implements LancamentoService {
     @Override
     @Transactional
     public Lancamento salvar(Lancamento obj) {
+        validar(obj);
+        obj.setStatus(StatusLancamento.PENDENTE);
         return repository.save(obj);
     }
 
     @Override
     @Transactional
     public Lancamento atualizar(Lancamento obj) {
+        validar(obj);
         Objects.requireNonNull(obj.getId());
         return repository.save(obj);
     }
@@ -37,7 +42,7 @@ public class LancamentoServiceImpl implements LancamentoService {
     @Override
     @Transactional
     public void deletar(Lancamento obj) {
-        Objects.requireNonNull(obj.getId()); 
+        Objects.requireNonNull(obj.getId());
         repository.delete(obj);
 
     }
@@ -45,11 +50,10 @@ public class LancamentoServiceImpl implements LancamentoService {
     @Override
     @Transactional(readOnly = true)
     public List<Lancamento> buscar(Lancamento objFiltro) {
-        Example example = Example.of(objFiltro, 
-            ExampleMatcher
-                .matching()
-                .withIgnoreCase()
-                .withStringMatcher(StringMatcher.CONTAINING));
+        Example example = Example.of(objFiltro,
+                ExampleMatcher.matching()
+                    .withIgnoreCase()
+                    .withStringMatcher(StringMatcher.CONTAINING));
 
         return repository.findAll(example);
     }
@@ -60,5 +64,27 @@ public class LancamentoServiceImpl implements LancamentoService {
         atualizar(obj);
 
     }
-    
+
+    @Override
+    public void validar(Lancamento obj) {
+        if (obj.getDescricao() == null || obj.getDescricao().trim().equals("")) {
+            throw new RegraNegocioException("Informe uma Descrição válida.");
+        }
+        if (obj.getMes() == null || obj.getMes() < 1 || obj.getMes() > 12) {
+            throw new RegraNegocioException("Informe um Mês válido.");
+        }
+        if (obj.getAno() == null || obj.getAno().toString().length() != 4) {
+            throw new RegraNegocioException("Informe um Ano válido.");
+        }
+        if (obj.getUsuario() == null  || obj.getUsuario().getId() == null) {
+            throw new RegraNegocioException("Informe um Usuário válido.");
+        }
+        if (obj.getValor() == null || obj.getValor().compareTo(BigDecimal.ZERO) < 1) {
+            throw new RegraNegocioException("Informe um Valor válido.");
+        }
+        if (obj.getTipo() == null) {
+            throw new RegraNegocioException("Informe um tipo de Lancamento.");
+        }
+    }
+
 }
