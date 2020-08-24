@@ -82,7 +82,7 @@ public class LancamentoResource {
         objFiltro.setAno(ano);
 
         Optional<Usuario> usuario = usuarioService.obtetPorId(idUsuario);
-        if (usuario.isPresent()) {
+        if (!usuario.isPresent()) {
             return ResponseEntity.badRequest().body("Usuário não encontrado para o ID informado.");
         } else {
             objFiltro.setUsuario(usuario.get());
