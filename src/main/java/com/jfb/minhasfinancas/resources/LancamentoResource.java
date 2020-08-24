@@ -37,7 +37,7 @@ public class LancamentoResource {
     @PostMapping
     public ResponseEntity salvar(@RequestBody LancamentoDTO objDto) {
         try {
-            Lancamento entidade = converteParaDto(objDto);
+            Lancamento entidade = converter(objDto);
             entidade = service.salvar(entidade);
             return new ResponseEntity(entidade, HttpStatus.CREATED);
         } catch (RegraNegocioException e) {
@@ -45,20 +45,20 @@ public class LancamentoResource {
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity atualizar(@PathVariable("id") Long id, LancamentoDTO objDto) {
-            return service.obterPorId(id).map(entity -> {
-                try {
-                    Lancamento obj = converteParaDto(objDto);
-                    obj.setId(entity.getId());
-                    service.atualizar(obj);
-                    return ResponseEntity.ok(obj);
-                } catch (RegraNegocioException e) {
-                    return ResponseEntity.badRequest().body(e.getMessage());
-                }
-        }).orElseGet(() -> new ResponseEntity("Lancamento não encontrado na base de Dados.",
-            HttpStatus.BAD_REQUEST));
-    }
+    @PutMapping("{id}")
+	public ResponseEntity atualizar( @PathVariable("id") Long id, @RequestBody LancamentoDTO dto ) {
+		return service.obterPorId(id).map( entity -> {
+			try {
+				Lancamento lancamento = converter(dto);
+				lancamento.setId(entity.getId());
+				service.atualizar(lancamento);
+				return ResponseEntity.ok(lancamento);
+			}catch (RegraNegocioException e) {
+				return ResponseEntity.badRequest().body(e.getMessage());
+			}
+		}).orElseGet( () ->
+			new ResponseEntity("Lancamento não encontrado na base de Dados.", HttpStatus.BAD_REQUEST) );
+	}
 
     @DeleteMapping("/{id}")
     public ResponseEntity deletar(@PathVariable Long id) {
@@ -91,25 +91,28 @@ public class LancamentoResource {
         return ResponseEntity.ok(obj);
     }
 
-    private Lancamento converteParaDto(LancamentoDTO objDto) {
-        Lancamento obj = new Lancamento();
-        obj.setDescricao(objDto.getDescricao());
-        obj.setAno(objDto.getAno());
-        obj.setMes(objDto.getMes());
-        obj.setValor(objDto.getValor());
+    private Lancamento converter(LancamentoDTO dto) {
+		Lancamento lancamento = new Lancamento();
+		lancamento.setId(dto.getId());
+		lancamento.setDescricao(dto.getDescricao());
+		lancamento.setAno(dto.getAno());
+		lancamento.setMes(dto.getMes());
+		lancamento.setValor(dto.getValor());
+		
+		Usuario usuario = usuarioService
+			.obtetPorId(dto.getUsuario())
+			.orElseThrow( () -> new RegraNegocioException("Usuário não encontrado para o Id informado.") );
+		
+		lancamento.setUsuario(usuario);
 
-        Usuario usuario = usuarioService.obtetPorId(objDto.getUsuario())
-            .orElseThrow(() -> new RegraNegocioException("Usuário não encontrado para o ID informado."));
-
-        obj.setUsuario(usuario);
-
-        if (objDto.getTipo() != null) {
-            obj.setTipo(TipoLancamento.valueOf(objDto.getTipo()));
-        }
-
-        if (objDto.getStatus() != null) {
-            obj.setStatus(StatusLancamento.valueOf(objDto.getStatus()));
-        }
-        return obj;
-    }
+		if(dto.getTipo() != null) {
+			lancamento.setTipo(TipoLancamento.valueOf(dto.getTipo()));
+		}
+		
+		if(dto.getStatus() != null) {
+			lancamento.setStatus(StatusLancamento.valueOf(dto.getStatus()));
+		}
+		
+		return lancamento;
+	}
 }
