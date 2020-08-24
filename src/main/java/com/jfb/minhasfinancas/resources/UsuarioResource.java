@@ -6,7 +6,6 @@ import com.jfb.minhasfinancas.model.dto.UsuarioDTO;
 import com.jfb.minhasfinancas.model.entity.Usuario;
 import com.jfb.minhasfinancas.services.UsuarioService;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,12 +13,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.RequiredArgsConstructor;
+
 @RestController
 @RequestMapping("/api/usuarios")
+@RequiredArgsConstructor
 public class UsuarioResource {
     
-    @Autowired
-    private UsuarioService service;
+    private final UsuarioService service;
 
     @PostMapping("/autenticar")
     public ResponseEntity<?> autenticar(@RequestBody UsuarioDTO dto) {

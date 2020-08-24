@@ -12,7 +12,6 @@ import com.jfb.minhasfinancas.model.enums.TipoLancamento;
 import com.jfb.minhasfinancas.services.LancamentoService;
 import com.jfb.minhasfinancas.services.UsuarioService;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,14 +24,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.RequiredArgsConstructor;
+
 @RestController
 @RequestMapping("/api/lancamentos")
+@RequiredArgsConstructor
 public class LancamentoResource {
     
-    @Autowired
-    private LancamentoService service;
-
-    private UsuarioService UsuarioService;
+    private final LancamentoService service;
+    private final UsuarioService usuarioService;
 
     @PostMapping
     public ResponseEntity salvar(@RequestBody LancamentoDTO objDto) {
@@ -81,7 +81,7 @@ public class LancamentoResource {
         objFiltro.setMes(mes);
         objFiltro.setAno(ano);
 
-        Optional<Usuario> usuario = UsuarioService.obtetPorId(idUsuario);
+        Optional<Usuario> usuario = usuarioService.obtetPorId(idUsuario);
         if (usuario.isPresent()) {
             return ResponseEntity.badRequest().body("Usuário não encontrado para o ID informado.");
         } else {
@@ -98,12 +98,18 @@ public class LancamentoResource {
         obj.setMes(objDto.getMes());
         obj.setValor(objDto.getValor());
 
-        Usuario usuario = UsuarioService.obtetPorId(objDto.getUsuario())
+        Usuario usuario = usuarioService.obtetPorId(objDto.getUsuario())
             .orElseThrow(() -> new RegraNegocioException("Usuário não encontrado para o ID informado."));
 
         obj.setUsuario(usuario);
-        obj.setTipo(TipoLancamento.valueOf(objDto.getTipo()));
-        obj.setStatus(StatusLancamento.valueOf(objDto.getStatus()));
+
+        if (objDto.getTipo() != null) {
+            obj.setTipo(TipoLancamento.valueOf(objDto.getTipo()));
+        }
+
+        if (objDto.getStatus() != null) {
+            obj.setStatus(StatusLancamento.valueOf(objDto.getStatus()));
+        }
         return obj;
     }
 }
