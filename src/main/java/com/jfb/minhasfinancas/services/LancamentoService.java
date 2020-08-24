@@ -1,6 +1,7 @@
 package com.jfb.minhasfinancas.services;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.jfb.minhasfinancas.model.entity.Lancamento;
 import com.jfb.minhasfinancas.model.enums.StatusLancamento;
@@ -18,4 +19,6 @@ public interface LancamentoService {
      void atualizarStatus(Lancamento obj, StatusLancamento status);
 
      void validar(Lancamento obj);
+
+     Optional<Lancamento> obterPorId(Long id);
 }

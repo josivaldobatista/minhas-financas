@@ -3,6 +3,7 @@ package com.jfb.minhasfinancas.services.impl;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import com.jfb.minhasfinancas.exceptions.RegraNegocioException;
 import com.jfb.minhasfinancas.model.entity.Lancamento;
@@ -51,9 +52,7 @@ public class LancamentoServiceImpl implements LancamentoService {
     @Transactional(readOnly = true)
     public List<Lancamento> buscar(Lancamento objFiltro) {
         Example example = Example.of(objFiltro,
-                ExampleMatcher.matching()
-                    .withIgnoreCase()
-                    .withStringMatcher(StringMatcher.CONTAINING));
+                ExampleMatcher.matching().withIgnoreCase().withStringMatcher(StringMatcher.CONTAINING));
 
         return repository.findAll(example);
     }
@@ -76,7 +75,7 @@ public class LancamentoServiceImpl implements LancamentoService {
         if (obj.getAno() == null || obj.getAno().toString().length() != 4) {
             throw new RegraNegocioException("Informe um Ano válido.");
         }
-        if (obj.getUsuario() == null  || obj.getUsuario().getId() == null) {
+        if (obj.getUsuario() == null || obj.getUsuario().getId() == null) {
             throw new RegraNegocioException("Informe um Usuário válido.");
         }
         if (obj.getValor() == null || obj.getValor().compareTo(BigDecimal.ZERO) < 1) {
@@ -85,6 +84,11 @@ public class LancamentoServiceImpl implements LancamentoService {
         if (obj.getTipo() == null) {
             throw new RegraNegocioException("Informe um tipo de Lancamento.");
         }
+    }
+
+    @Override
+    public Optional<Lancamento> obterPorId(Long id) {
+        return repository.findById(id);
     }
 
 }
