@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.jfb.minhasfinancas.exceptions.RegraNegocioException;
+import com.jfb.minhasfinancas.model.dto.AtualizaStatusDTO;
 import com.jfb.minhasfinancas.model.dto.LancamentoDTO;
 import com.jfb.minhasfinancas.model.entity.Lancamento;
 import com.jfb.minhasfinancas.model.entity.Usuario;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException.BadRequest;
 
 import lombok.RequiredArgsConstructor;
 
@@ -58,7 +60,25 @@ public class LancamentoResource {
 			}
 		}).orElseGet( () ->
 			new ResponseEntity("Lancamento não encontrado na base de Dados.", HttpStatus.BAD_REQUEST) );
-	}
+    }
+    
+    @PutMapping("/{id}/atualiza-status")
+    public ResponseEntity atualizarStatus(@PathVariable Long id, @RequestBody AtualizaStatusDTO objDto) {
+        return service.obterPorId(id).map(entity -> {
+            StatusLancamento statusSelecionado = StatusLancamento.valueOf(objDto.getStatus());
+            if (statusSelecionado == null) {
+                return ResponseEntity.badRequest().body("Não foi possivel atualizar status do lancamento, envie um sttus válido.")
+            }
+            try {
+                entity.setStatus(statusSelecionado);
+                service.atualizar(entity);
+                return ResponseEntity.ok(entity);
+            } catch (RegraNegocioException e) {
+                return ResponseEntity.badRequest().body(e.getMessage());
+            }
+        }).orElseGet( () ->
+		new ResponseEntity("Lancamento não encontrado na base de Dados.", HttpStatus.BAD_REQUEST) );
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity deletar(@PathVariable Long id) {
@@ -108,11 +128,9 @@ public class LancamentoResource {
 		if(dto.getTipo() != null) {
 			lancamento.setTipo(TipoLancamento.valueOf(dto.getTipo()));
 		}
-		
 		if(dto.getStatus() != null) {
 			lancamento.setStatus(StatusLancamento.valueOf(dto.getStatus()));
 		}
-		
 		return lancamento;
 	}
 }
