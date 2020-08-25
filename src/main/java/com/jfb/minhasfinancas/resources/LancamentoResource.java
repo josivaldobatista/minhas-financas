@@ -67,7 +67,7 @@ public class LancamentoResource {
         return service.obterPorId(id).map(entity -> {
             StatusLancamento statusSelecionado = StatusLancamento.valueOf(objDto.getStatus());
             if (statusSelecionado == null) {
-                return ResponseEntity.badRequest().body("Não foi possivel atualizar status do lancamento, envie um sttus válido.")
+                return ResponseEntity.badRequest().body("Não foi possivel atualizar status do lancamento, envie um sttus válido.");
             }
             try {
                 entity.setStatus(statusSelecionado);

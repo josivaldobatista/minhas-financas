@@ -8,6 +8,7 @@ import java.util.Optional;
 import com.jfb.minhasfinancas.exceptions.RegraNegocioException;
 import com.jfb.minhasfinancas.model.entity.Lancamento;
 import com.jfb.minhasfinancas.model.enums.StatusLancamento;
+import com.jfb.minhasfinancas.model.enums.TipoLancamento;
 import com.jfb.minhasfinancas.repositories.LancamentoRepository;
 import com.jfb.minhasfinancas.services.LancamentoService;
 
@@ -89,6 +90,20 @@ public class LancamentoServiceImpl implements LancamentoService {
     @Override
     public Optional<Lancamento> obterPorId(Long id) {
         return repository.findById(id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public BigDecimal obterSaldoPorUsuario(Long id) {
+        BigDecimal receitas = repository.obterSaldoPorTipoLancamentoEUsuario(id, TipoLancamento.RECEITA.name());
+        BigDecimal despesas = repository.obterSaldoPorTipoLancamentoEUsuario(id, TipoLancamento.DESPESA.name());
+            if (receitas == null) {
+                receitas = BigDecimal.ZERO;
+            }
+            if (despesas == null) {
+                despesas = BigDecimal.ZERO;
+            }
+        return receitas.subtract(despesas);
     }
 
 }
