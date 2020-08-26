@@ -70,7 +70,7 @@ public class LancamentoRepositoryTest {
     }
     
     // Métodos de apoio
-    private Lancamento criarLancamento() {
+    public static Lancamento criarLancamento() {
     	return Lancamento.builder()
     			.ano(2020)
     			.mes(1)
