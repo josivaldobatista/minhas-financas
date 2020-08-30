@@ -3,13 +3,16 @@ package com.jfb.minhasfinancas.services;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.jfb.minhasfinancas.exceptions.RegraNegocioException;
 import com.jfb.minhasfinancas.model.entity.Lancamento;
 import com.jfb.minhasfinancas.model.enums.StatusLancamento;
 import com.jfb.minhasfinancas.repositories.LancamentoRepository;
@@ -47,6 +50,16 @@ public class LancamentoServiceTest {
 	
 	@Test
 	public void naoDeveSalvarUmLancamentoQuandoHouverErroDeValidacao() {
+		// Cenário
+		Lancamento objASalvar = LancamentoRepositoryTest.criarLancamento();
+		Mockito.doThrow(RegraNegocioException.class).when(service).validar(objASalvar);
+		
+		// Ação/execução
+		Assertions.catchThrowableOfType(() -> service.salvar(objASalvar),
+				RegraNegocioException.class);
+		
+		// Verificação
+		Mockito.verify(repository, Mockito.never()).save(objASalvar);
 		
 	}
 }
