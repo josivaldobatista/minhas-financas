@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
@@ -152,6 +153,36 @@ public class LancamentoServiceTest {
 		// Verificação
 		Assertions.assertThat(obj.getStatus()).isEqualTo(novoStatus);
 		Mockito.verify(service).atualizar(obj);
+	}
+	
+	@Test
+	public void deveObterUmLancamentoPorId() {
+		// Cenário
+		Long id = 1l;
+		Lancamento obj = LancamentoRepositoryTest.criarLancamento();
+		obj.setId(id);
+		Mockito.when(repository.findById(id)).thenReturn(Optional.of(obj));
+		
+		// Ação/execução
+		Optional<Lancamento> resultado = service.obterPorId(id);
+		
+		// Verificação
+		Assertions.assertThat(resultado.isPresent()).isTrue();
+	}
+	
+	@Test
+	public void deveRetornaVazioQuandoUmLancamentoNaoExistir () {
+		// Cenário
+		Long id = 1l;
+		Lancamento obj = LancamentoRepositoryTest.criarLancamento();
+		obj.setId(id);
+		Mockito.when(repository.findById(id)).thenReturn(Optional.empty());
+		
+		// Ação/execução
+		Optional<Lancamento> resultado = service.obterPorId(id);
+		
+		// Verificação
+		Assertions.assertThat(resultado.isPresent()).isFalse();
 	}
 	
 }
