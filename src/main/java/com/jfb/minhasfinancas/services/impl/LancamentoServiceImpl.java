@@ -36,8 +36,8 @@ public class LancamentoServiceImpl implements LancamentoService {
     @Override
     @Transactional
     public Lancamento atualizar(Lancamento obj) {
+    	Objects.requireNonNull(obj.getId());
         validar(obj);
-        Objects.requireNonNull(obj.getId());
         return repository.save(obj);
     }
 

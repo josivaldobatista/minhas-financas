@@ -60,8 +60,35 @@ public class LancamentoServiceTest {
 		
 		// Verificação
 		Mockito.verify(repository, Mockito.never()).save(objASalvar);
-		
 	}
+	
+	@Test
+	public void deveAtualizarUmlancamento() {
+		// Cenário
+		Lancamento objSalvo = LancamentoRepositoryTest.criarLancamento();
+		objSalvo.setId(1l);
+		objSalvo.setStatus(StatusLancamento.PENDENTE);
+		
+		Mockito.doNothing().when(service).validar(objSalvo);
+		Mockito.when(repository.save(objSalvo)).thenReturn(objSalvo);
+		
+		// Ação/execução
+		service.atualizar(objSalvo);
+		
+		// Verificação
+		Mockito.verify(repository, Mockito.times(1)).save(objSalvo);
+	}
+	
+	@Test
+	public void deveLancarErroAoTentarAtualizarUmLancamentoQueAindaNaoFoiSalvo() {
+		// Cenário
+		Lancamento objASalvar = LancamentoRepositoryTest.criarLancamento();
+		
+		// Ação/execução e Execução
+		Assertions.catchThrowableOfType(() -> service.atualizar(objASalvar), NullPointerException.class);
+		Mockito.verify(repository, Mockito.never()).save(objASalvar);
+	}
+	
 }
 
 
