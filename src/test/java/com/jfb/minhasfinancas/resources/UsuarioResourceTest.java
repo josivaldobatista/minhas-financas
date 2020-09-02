@@ -4,6 +4,7 @@ import javax.swing.text.AbstractDocument.Content;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jfb.minhasfinancas.exceptions.ErroAutenticacao;
 import com.jfb.minhasfinancas.model.dto.UsuarioDTO;
 import com.jfb.minhasfinancas.model.entity.Usuario;
 import com.jfb.minhasfinancas.services.LancamentoService;
@@ -73,6 +74,32 @@ public class UsuarioResourceTest {
 			.andExpect(MockMvcResultMatchers.jsonPath("id").value(obj.getId()))
 			.andExpect(MockMvcResultMatchers.jsonPath("nome").value(obj.getNome()))
 			.andExpect(MockMvcResultMatchers.jsonPath("email").value(obj.getEmail()));
+
+	}
+
+	@Test
+	public void deveRetornaBadRequestAoObterErroDeAutenticacao() throws Exception {
+		// Cenário
+		String email = "usuario@email.com";
+		String senha = "123";
+
+		UsuarioDTO dto = UsuarioDTO.builder()
+			.email(email)
+			.senha(senha).build(); 
+
+		Mockito.when(service.autenticar(email, senha)).thenThrow(ErroAutenticacao.class);
+		String json = new ObjectMapper().writeValueAsString(dto);
+
+		// Execução e Verificação
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+			.post(BASE_API.concat("/autenticar"))
+			.accept(JSON_APP)
+			.contentType(JSON_APP)
+			.content(json);
+
+		mockMvc
+			.perform(request)
+			.andExpect(MockMvcResultMatchers.status().isBadRequest());
 
 	}
 	
