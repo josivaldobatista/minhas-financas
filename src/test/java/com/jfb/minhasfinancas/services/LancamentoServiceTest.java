@@ -250,8 +250,9 @@ public class LancamentoServiceTest {
 		
 		erro = catchThrowable( () -> service.validar(lancamento) );
 		assertThat(erro).isInstanceOf(RegraNegocioException.class).hasMessage("Informe um tipo de Lancamento.");
-		
 	}
+	
+	
 	
 }
 
