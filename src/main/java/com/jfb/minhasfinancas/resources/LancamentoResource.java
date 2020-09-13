@@ -3,16 +3,6 @@ package com.jfb.minhasfinancas.resources;
 import java.util.List;
 import java.util.Optional;
 
-import com.jfb.minhasfinancas.exceptions.RegraNegocioException;
-import com.jfb.minhasfinancas.model.dto.AtualizaStatusDTO;
-import com.jfb.minhasfinancas.model.dto.LancamentoDTO;
-import com.jfb.minhasfinancas.model.entity.Lancamento;
-import com.jfb.minhasfinancas.model.entity.Usuario;
-import com.jfb.minhasfinancas.model.enums.StatusLancamento;
-import com.jfb.minhasfinancas.model.enums.TipoLancamento;
-import com.jfb.minhasfinancas.services.LancamentoService;
-import com.jfb.minhasfinancas.services.UsuarioService;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,7 +14,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.HttpClientErrorException.BadRequest;
+
+import com.jfb.minhasfinancas.exceptions.RegraNegocioException;
+import com.jfb.minhasfinancas.model.dto.AtualizaStatusDTO;
+import com.jfb.minhasfinancas.model.dto.LancamentoDTO;
+import com.jfb.minhasfinancas.model.entity.Lancamento;
+import com.jfb.minhasfinancas.model.entity.Usuario;
+import com.jfb.minhasfinancas.model.enums.StatusLancamento;
+import com.jfb.minhasfinancas.model.enums.TipoLancamento;
+import com.jfb.minhasfinancas.services.LancamentoService;
+import com.jfb.minhasfinancas.services.UsuarioService;
 
 import lombok.RequiredArgsConstructor;
 
